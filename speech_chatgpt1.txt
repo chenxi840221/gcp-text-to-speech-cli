@@ -1,0 +1,33 @@
+Hello everyone,
+
+Today I want to take you through the Nexora Vulnerability Scanner project — a tool we’ve developed to automate security checks on Python packages.
+
+As developers and engineers, we all know the reality: our applications depend on countless third-party libraries. They give us power and speed, but they also create a huge attack surface. A single outdated dependency can become an entry point for attackers.
+
+Traditionally, vulnerability detection involves manual reviews, ad-hoc scripts, or relying on one database. The problem? Vulnerabilities are spread across different sources, and context is often missing. Nexora solves this by combining breadth and depth: breadth by pulling from multiple vulnerability databases, and depth by layering AI on top to make sense of what we find.
+
+Let me break down how it works.
+
+First, data integration. Nexora automatically queries trusted databases — NIST’s NVD, MITRE CVE, Snyk, Exploit DB, and GitHub Advisories. That gives us comprehensive coverage so we don’t miss hidden issues.
+
+Second, scanning logic. The scanner inspects every dependency in a Python project. It matches versions against known vulnerabilities, flags outdated packages, and checks compliance requirements.
+
+Third, AI analysis. This is where it gets smarter. Using Google Cloud Vertex AI and Gemini models, Nexora goes beyond listing vulnerabilities. It analyzes them in context. For example, two projects might depend on the same vulnerable library, but only one is actually at risk depending on how that function is used. The AI can highlight that nuance — saving engineers time and reducing false alarms.
+
+Fourth, reporting. Instead of dumping JSON or raw logs, the system generates Excel reports. Vulnerabilities are clearly color-coded by severity. Recommendations are written in standardized language so security teams and developers can act without confusion.
+
+Architecturally, we’ve applied the VIPER pattern. Each part of the system — the View, Interactor, Presenter, Entity, and Router — has a distinct role. This keeps it modular and testable. Want to plug in a new vulnerability source? Swap in a different AI model? Extend reporting to dashboards? It’s all designed for that.
+
+What’s the impact for us as engineers?
+
+We reduce the risk of security blind spots.
+
+We get actionable insights rather than raw data.
+
+We save time on manual triage.
+
+And we build a foundation that can grow as threats evolve.
+
+In other words, Nexora is more than a scanner. It’s an intelligent assistant for secure development. It makes sure that when we build fast, we don’t forget to build safe.
+
+Thank you.

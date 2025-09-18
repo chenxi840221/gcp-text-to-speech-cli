@@ -1,0 +1,5 @@
+Hello, this is the first test line for batch processing.
+This is the second line that demonstrates our text-to-speech capabilities.
+Our CLI tool can handle multiple lines of text efficiently.
+Each line will be converted to a separate audio file.
+Thank you for testing our Google Cloud Text-to-Speech CLI tool.

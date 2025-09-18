@@ -1,0 +1,9 @@
+text,language,voice,output_name
+"Hello and welcome to our international service",en-US,en-US-Neural2-A,english_welcome
+"Hola y bienvenidos a nuestro servicio internacional",es-ES,es-ES-Neural2-B,spanish_welcome
+"Bonjour et bienvenue à notre service international",fr-FR,fr-FR-Neural2-A,french_welcome
+"Hallo und willkommen bei unserem internationalen Service",de-DE,de-DE-Neural2-A,german_welcome
+"こんにちは、国際サービスへようこそ",ja-JP,ja-JP-Neural2-B,japanese_welcome
+"안녕하세요, 국제 서비스에 오신 것을 환영합니다",ko-KR,ko-KR-Neural2-A,korean_welcome
+"您好，欢迎使用我们的国际服务",zh-CN,zh-CN-Standard-A,chinese_welcome
+"नमस्ते, हमारी अंतर्राष्ट्रीय सेवा में आपका स्वागत है",hi-IN,hi-IN-Neural2-A,hindi_welcome

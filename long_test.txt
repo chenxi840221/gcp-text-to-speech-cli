@@ -1,0 +1,11 @@
+This is a demonstration of our enhanced CLI text processing capabilities. Our Google Cloud Text-to-Speech CLI tool now includes advanced features for handling long documents. The tool can automatically detect file encoding, clean text for optimal speech synthesis, and split long documents into manageable chunks while preserving sentence boundaries.
+
+When processing long texts, the CLI intelligently breaks content into chunks of approximately 4500 characters or less, ensuring that each piece stays within the Google Cloud Text-to-Speech API limits. The chunking algorithm respects sentence boundaries whenever possible, preventing awkward breaks in the middle of sentences that could affect the natural flow of the generated speech.
+
+The enhanced CLI also includes comprehensive file validation, checking for file existence, readability, and size limits. It supports multiple text file formats including plain text, Markdown, reStructuredText, and many others. The automatic encoding detection ensures that files with different character encodings are processed correctly.
+
+For batch processing scenarios, the CLI provides parallel processing capabilities with configurable worker pools. This allows users to process multiple text chunks or files simultaneously, significantly reducing the total processing time for large document collections.
+
+The tool also includes preview functionality, allowing users to see how their text will be split into chunks before actual processing begins. This helps users understand the processing plan and make adjustments if needed. Error handling has been enhanced to provide clear feedback about any issues encountered during processing.
+
+Additionally, the CLI now supports combining multiple audio chunks back into a single file for documents that were split during processing. This feature uses the pydub library to seamlessly merge audio segments while maintaining quality and proper timing.

@@ -1,0 +1,128 @@
+# Production Environment Configuration
+
+# Google Cloud Platform Settings
+gcp:
+  project_id: "${GOOGLE_CLOUD_PROJECT}"
+  location: "${VERTEX_AI_LOCATION}"
+  credentials_path: "${GOOGLE_APPLICATION_CREDENTIALS}"
+
+# Text-to-Speech Settings
+tts:
+  bucket_name: "${TTS_BUCKET_NAME}"
+  audio_prefix: "tts-audio"
+  max_text_length: 5000
+  default_language: "en-US"
+  default_voice_gender: "NEUTRAL"
+  default_audio_encoding: "MP3"
+  request_timeout: 30
+  cache_enabled: true
+  cache_ttl: 3600  # 1 hour for production
+
+# Database Settings
+firestore:
+  database: "(default)"
+  collection_prefix: "prod_"
+
+# API Settings
+api:
+  version: "v1"
+  host: "0.0.0.0"
+  port: 8080
+  debug: false
+  cors_enabled: true
+  allowed_origins:
+    - "https://yourdomain.com"
+    - "https://www.yourdomain.com"
+    - "https://api.yourdomain.com"
+
+# Security Settings
+security:
+  rate_limit_per_minute: 60
+  auth_required: true
+  api_key_validation: true
+  ssl_required: true
+  content_security_policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+
+# Logging Settings
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_enabled: false  # Use Cloud Logging in production
+  console_enabled: true
+  structured_logging: true
+
+# Monitoring Settings
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_interval: 10
+  cloud_monitoring: true
+  alerting_enabled: true
+
+# Performance Settings
+performance:
+  max_concurrent_requests: 50
+  connection_pool_size: 10
+  request_queue_size: 100
+  worker_timeout: 30
+
+# Voice Settings
+voices:
+  load_on_startup: true
+  cache_voices: true
+  supported_languages:
+    - "en-US"
+    - "en-GB"
+    - "en-AU"
+    - "es-ES"
+    - "es-US"
+    - "fr-FR"
+    - "fr-CA"
+    - "de-DE"
+    - "it-IT"
+    - "pt-BR"
+    - "ja-JP"
+    - "ko-KR"
+    - "zh-CN"
+    - "hi-IN"
+    - "ar-XA"
+
+# Audio Processing
+audio:
+  formats:
+    - "MP3"
+    - "LINEAR16"
+    - "OGG_OPUS"
+  max_duration_seconds: 300
+  quality_settings:
+    mp3_bitrate: 192
+    wav_sample_rate: 24000
+  storage_class: "STANDARD"
+  lifecycle_policy:
+    delete_after_days: 30
+
+# Caching
+cache:
+  enabled: true
+  backend: "memorystore"  # Google Cloud Memorystore (Redis)
+  host: "${REDIS_HOST}"
+  port: 6379
+  password: "${REDIS_PASSWORD}"
+  db: 0
+  ttl: 3600
+  max_connections: 20
+
+# Error Handling
+error_handling:
+  sentry_enabled: true
+  sentry_dsn: "${SENTRY_DSN}"
+  error_reporting: true
+  retry_attempts: 3
+  retry_delay: 1
+
+# Backup and Recovery
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  backup_bucket: "${BACKUP_BUCKET_NAME}"

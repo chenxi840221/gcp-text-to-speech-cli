@@ -1,0 +1,593 @@
+openapi: 3.0.3
+info:
+  title: Google Cloud Text-to-Speech API
+  description: |
+    A comprehensive Text-to-Speech API powered by Google Cloud Platform services.
+    Convert text and SSML to natural-sounding speech using Google's advanced AI models.
+
+    Features:
+    - Multiple voice types (Standard, WaveNet, Neural2)
+    - Support for 40+ languages
+    - SSML support for advanced speech control
+    - Audio format options (MP3, WAV, OGG)
+    - Voice customization (pitch, speed, gender)
+    - Audio file storage and retrieval
+  version: 1.0.0
+  contact:
+    name: TTS API Team
+    email: tts-api@company.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://tts-api-{project}.uc.gateway.dev
+    description: Production API Gateway
+  - url: https://tts-staging-{project}.uc.gateway.dev
+    description: Staging API Gateway
+  - url: http://localhost:8080
+    description: Local Development Server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Check if the API service is running and healthy
+      tags: [Health]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  service:
+                    type: string
+                    example: "Text-to-Speech API"
+                  version:
+                    type: string
+                    example: "1.0.0"
+
+  /api/v1/tts/synthesize:
+    post:
+      summary: Convert text to speech
+      description: Generate audio from plain text using Google Cloud Text-to-Speech
+      tags: [Text-to-Speech]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextSynthesisRequest'
+            examples:
+              basic_request:
+                summary: Basic text synthesis
+                value:
+                  text: "Hello, welcome to our Text-to-Speech service!"
+                  language_code: "en-US"
+                  ssml_gender: "NEUTRAL"
+                  audio_encoding: "MP3"
+              advanced_request:
+                summary: Advanced synthesis with custom voice
+                value:
+                  text: "This is a demonstration of advanced speech synthesis."
+                  language_code: "en-US"
+                  voice_name: "en-US-Neural2-A"
+                  ssml_gender: "FEMALE"
+                  audio_encoding: "LINEAR16"
+                  speaking_rate: 1.2
+                  pitch: 2.0
+                  user_id: "user_123"
+      responses:
+        '200':
+          description: Speech synthesis successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynthesisResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/synthesize-ssml:
+    post:
+      summary: Convert SSML to speech
+      description: Generate audio from SSML (Speech Synthesis Markup Language) content
+      tags: [Text-to-Speech]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSMLSynthesisRequest'
+            examples:
+              ssml_request:
+                summary: SSML with pauses and emphasis
+                value:
+                  ssml: "<speak>Hello <break time='1s'/> and welcome to our <emphasis level='strong'>amazing</emphasis> Text-to-Speech service!</speak>"
+                  language_code: "en-US"
+                  voice_name: "en-US-Wavenet-D"
+                  audio_encoding: "MP3"
+      responses:
+        '200':
+          description: SSML synthesis successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynthesisResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/voices:
+    get:
+      summary: Get available voices
+      description: Retrieve list of available voices, optionally filtered by language
+      tags: [Voices]
+      parameters:
+        - name: language_code
+          in: query
+          description: Filter voices by language code (e.g., en-US, es-ES)
+          required: false
+          schema:
+            type: string
+            pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+            example: "en-US"
+      responses:
+        '200':
+          description: Available voices retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoicesResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/history/{user_id}:
+    get:
+      summary: Get user synthesis history
+      description: Retrieve synthesis history for a specific user
+      tags: [History]
+      parameters:
+        - name: user_id
+          in: path
+          description: User identifier
+          required: true
+          schema:
+            type: string
+            example: "user_123"
+        - name: limit
+          in: query
+          description: Maximum number of history items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+            example: 10
+      responses:
+        '200':
+          description: User history retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/languages:
+    get:
+      summary: Get supported languages
+      description: Retrieve list of supported languages and regions
+      tags: [Languages]
+      responses:
+        '200':
+          description: Supported languages retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguagesResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TextSynthesisRequest:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          description: Text content to synthesize
+          maxLength: 5000
+          example: "Hello, welcome to our Text-to-Speech service!"
+        language_code:
+          type: string
+          description: Language code (BCP-47 format)
+          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+          default: "en-US"
+          example: "en-US"
+        voice_name:
+          type: string
+          description: Specific voice name to use
+          example: "en-US-Neural2-A"
+        ssml_gender:
+          type: string
+          enum: [NEUTRAL, MALE, FEMALE]
+          default: NEUTRAL
+          description: Voice gender preference
+        audio_encoding:
+          type: string
+          enum: [MP3, LINEAR16, OGG_OPUS, MULAW, ALAW]
+          default: MP3
+          description: Audio output format
+        speaking_rate:
+          type: number
+          minimum: 0.25
+          maximum: 4.0
+          default: 1.0
+          description: Speaking rate (0.25x to 4.0x)
+          example: 1.0
+        pitch:
+          type: number
+          minimum: -20.0
+          maximum: 20.0
+          default: 0.0
+          description: Pitch adjustment in semitones
+          example: 0.0
+        user_id:
+          type: string
+          description: User identifier for tracking
+          example: "user_123"
+
+    SSMLSynthesisRequest:
+      type: object
+      required: [ssml]
+      properties:
+        ssml:
+          type: string
+          description: SSML content to synthesize
+          example: "<speak>Hello <break time='1s'/> World!</speak>"
+        language_code:
+          type: string
+          description: Language code (BCP-47 format)
+          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+          default: "en-US"
+          example: "en-US"
+        voice_name:
+          type: string
+          description: Specific voice name to use
+          example: "en-US-Wavenet-D"
+        audio_encoding:
+          type: string
+          enum: [MP3, LINEAR16, OGG_OPUS, MULAW, ALAW]
+          default: MP3
+          description: Audio output format
+        user_id:
+          type: string
+          description: User identifier for tracking
+          example: "user_123"
+
+    SynthesisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Text-to-speech synthesis completed successfully"
+        data:
+          type: object
+          properties:
+            request_id:
+              type: string
+              description: Unique identifier for the synthesis request
+              example: "req_abc123def456"
+            audio_url:
+              type: string
+              format: uri
+              description: URL to download the generated audio file
+              example: "https://storage.googleapis.com/tts-bucket/audio/req_abc123def456.mp3"
+            duration_seconds:
+              type: number
+              description: Duration of the generated audio in seconds
+              example: 3.45
+            character_count:
+              type: integer
+              description: Number of characters processed
+              example: 42
+            processing_time_ms:
+              type: integer
+              description: Processing time in milliseconds
+              example: 1250
+            metadata:
+              type: object
+              properties:
+                voice_name:
+                  type: string
+                  example: "en-US-Neural2-A"
+                language_code:
+                  type: string
+                  example: "en-US"
+                audio_encoding:
+                  type: string
+                  example: "MP3"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        status_code:
+          type: integer
+          example: 200
+
+    VoicesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Available voices retrieved successfully"
+        data:
+          type: object
+          properties:
+            total_voices:
+              type: integer
+              description: Total number of available voices
+              example: 45
+            voices:
+              type: object
+              properties:
+                standard:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Voice'
+                wavenet:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Voice'
+                neural2:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Voice'
+                news:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Voice'
+                studio:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Voice'
+        timestamp:
+          type: string
+          format: date-time
+        status_code:
+          type: integer
+          example: 200
+
+    Voice:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Voice identifier
+          example: "en-US-Neural2-A"
+        language_codes:
+          type: array
+          items:
+            type: string
+          description: Supported language codes
+          example: ["en-US"]
+        ssml_gender:
+          type: string
+          enum: [NEUTRAL, MALE, FEMALE]
+          description: Voice gender
+          example: "FEMALE"
+        natural_sample_rate_hertz:
+          type: integer
+          description: Natural sample rate in Hz
+          example: 24000
+
+    HistoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "User history retrieved successfully"
+        data:
+          type: object
+          properties:
+            user_id:
+              type: string
+              example: "user_123"
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/HistoryItem'
+            count:
+              type: integer
+              description: Number of history items returned
+              example: 5
+        timestamp:
+          type: string
+          format: date-time
+        status_code:
+          type: integer
+          example: 200
+
+    HistoryItem:
+      type: object
+      properties:
+        request_id:
+          type: string
+          example: "req_abc123def456"
+        text:
+          type: string
+          description: Truncated text content
+          example: "Hello, welcome to our Text-to-Speech service..."
+        language_code:
+          type: string
+          example: "en-US"
+        voice_name:
+          type: string
+          example: "en-US-Neural2-A"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+
+    LanguagesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Supported languages retrieved successfully"
+        data:
+          type: object
+          properties:
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Language'
+            total:
+              type: integer
+              example: 15
+        timestamp:
+          type: string
+          format: date-time
+        status_code:
+          type: integer
+          example: 200
+
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          description: BCP-47 language code
+          example: "en-US"
+        name:
+          type: string
+          description: Human-readable language name
+          example: "English (US)"
+        region:
+          type: string
+          description: Geographic region
+          example: "United States"
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Error description
+              example: "Invalid request parameters"
+            type:
+              type: string
+              description: Error type
+              example: "ValidationError"
+            code:
+              type: integer
+              description: HTTP status code
+              example: 400
+            details:
+              type: object
+              description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+        status_code:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: "Request validation failed"
+              type: "ValidationError"
+              code: 400
+              details:
+                validation_errors:
+                  text: "Text must be 5000 characters or less"
+            timestamp: "2024-01-15T10:30:00Z"
+            status_code: 400
+
+    Unauthorized:
+      description: Unauthorized - Invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: "Authentication required"
+              type: "AuthenticationError"
+              code: 401
+            timestamp: "2024-01-15T10:30:00Z"
+            status_code: 401
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: "Internal server error occurred"
+              type: "InternalError"
+              code: 500
+            timestamp: "2024-01-15T10:30:00Z"
+            status_code: 500
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Text-to-Speech
+    description: Speech synthesis operations
+  - name: Voices
+    description: Voice management and discovery
+  - name: History
+    description: User synthesis history
+  - name: Languages
+    description: Language support information

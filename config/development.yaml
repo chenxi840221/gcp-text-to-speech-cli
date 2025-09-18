@@ -1,0 +1,81 @@
+# Development Environment Configuration
+
+# Google Cloud Platform Settings
+gcp:
+  project_id: "your-dev-project-id"
+  location: "us-central1"
+  credentials_path: "./service-account-dev.json"
+
+# Text-to-Speech Settings
+tts:
+  bucket_name: "your-dev-project-tts-audio"
+  audio_prefix: "tts-audio"
+  max_text_length: 5000
+  default_language: "en-US"
+  default_voice_gender: "NEUTRAL"
+  default_audio_encoding: "MP3"
+  request_timeout: 30
+  cache_enabled: true
+  cache_ttl: 1800  # 30 minutes for development
+
+# Database Settings
+firestore:
+  database: "(default)"
+  collection_prefix: "dev_"
+
+# API Settings
+api:
+  version: "v1"
+  host: "0.0.0.0"
+  port: 8080
+  debug: true
+  cors_enabled: true
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8080"
+
+# Security Settings
+security:
+  rate_limit_per_minute: 100
+  auth_required: false
+  api_key_validation: false
+
+# Logging Settings
+logging:
+  level: "DEBUG"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_enabled: true
+  file_path: "./logs/tts-dev.log"
+  console_enabled: true
+
+# Monitoring Settings
+monitoring:
+  enabled: false
+  metrics_port: 9090
+  health_check_interval: 30
+
+# Voice Settings
+voices:
+  load_on_startup: true
+  cache_voices: true
+  supported_languages:
+    - "en-US"
+    - "en-GB"
+    - "es-ES"
+    - "fr-FR"
+    - "de-DE"
+    - "ja-JP"
+    - "ko-KR"
+
+# Audio Processing
+audio:
+  formats:
+    - "MP3"
+    - "LINEAR16"
+    - "OGG_OPUS"
+  max_duration_seconds: 300
+  quality_settings:
+    mp3_bitrate: 128
+    wav_sample_rate: 22050

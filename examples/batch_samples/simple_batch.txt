@@ -1,0 +1,5 @@
+Welcome to our text-to-speech service demonstration.
+This is the second line of text that will be converted to speech.
+Each line in this file will become a separate audio file.
+You can use this format for simple batch processing.
+Thank you for using our Google Cloud Text-to-Speech CLI tool.
