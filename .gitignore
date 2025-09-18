@@ -223,12 +223,12 @@ dist/
 .local/
 local_config.py
 
-# Audio files
-*.mp3
-*.wav
-*.ogg
-*.m4a
-*.flac
+# Audio files (commented out to allow demo files)
+# *.mp3
+# *.wav
+# *.ogg
+# *.m4a
+# *.flac
 
 # Backup files
 *.bak
